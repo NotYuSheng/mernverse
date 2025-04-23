@@ -1,26 +1,24 @@
 import { useEffect, useState } from 'react';
-import io from 'socket.io-client';
-
-// Connect to the backend through Nginx using relative path
-const socket = io('/'); // This works because Nginx proxies WebSocket traffic
+import ChatWindow from './components/ChatWindow';
+import { fetchMessages } from './api/messages';
+import socket from './services/socket';
 
 function App() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
 
-  // Load chat history when component mounts
+  // Load chat history
   useEffect(() => {
-    fetch('/api/messages')
-      .then(res => res.json())
-      .then(data => setMessages(data));
+    fetchMessages()
+      .then(setMessages)
+      .catch(console.error);
   }, []);
 
-  // Listen for real-time incoming messages
+  // WebSocket handling
   useEffect(() => {
     socket.on('chat message', (msg) => {
       setMessages(prev => [...prev, msg]);
     });
-
     return () => socket.off('chat message');
   }, []);
 
@@ -33,21 +31,12 @@ function App() {
   };
 
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
-      <h1>MERNverse Chat</h1>
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {messages.map((msg, idx) => (
-          <li key={idx}><strong>{msg.username}:</strong> {msg.message}</li>
-        ))}
-      </ul>
-      <input
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        placeholder="Type a message..."
-        style={{ width: '80%', padding: '10px', marginRight: '10px' }}
-      />
-      <button onClick={sendMessage} style={{ padding: '10px' }}>Send</button>
-    </div>
+    <ChatWindow
+      messages={messages}
+      input={input}
+      setInput={setInput}
+      sendMessage={sendMessage}
+    />
   );
 }
 
