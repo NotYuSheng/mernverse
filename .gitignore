@@ -1,43 +1,45 @@
-# Node.js / Backend
+# Node.js dependencies (frontend + backend)
 node_modules/
-.env
+**/node_modules/
+
+# Logs
+logs/
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-package-lock.json
 
-# Logs
-logs
-*.log
-logs/**/*.log
-
-# OS files
+# OS-specific files
 .DS_Store
 Thumbs.db
 
-# Editor files
+# Build output
+frontend/dist/
+frontend/.vite/
+
+# Environment variables (if you ever decide to use .env locally)
+.env
+.env.local
+.env.*.local
+
+# Docker
+docker-compose.override.yml
+*.env  # Optional if you have env files for Docker
+
+# VSCode and IDE settings
 .vscode/
 .idea/
-*.swp
 
-# Build output
-dist/
-build/
+# Nginx generated files (if any)
+nginx/logs/
+nginx/temp/
 
-# Docker files (if using Docker volumes locally)
-docker-compose.override.yml
+# Coverage/testing
+coverage/
+backend/test-results/
 
-# MongoDB dump files
-dump/
-
-# Frontend (Vite, React)
-frontend/node_modules/
-frontend/dist/
-frontend/.env
-frontend/.DS_Store
-
-# Backend-specific
-backend/node_modules/
-backend/dist/
-backend/.env
-backend/.DS_Store
+# Optional lockfiles
+package-lock.json
+# Uncomment below if using yarn or pnpm
+# yarn.lock
+# pnpm-lock.yaml
