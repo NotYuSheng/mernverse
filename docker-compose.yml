@@ -1,0 +1,27 @@
+services:
+  mernverse-backend:
+    build: ./backend
+    container_name: mernverse-backend
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mernverse-mongo
+    networks:
+      - mernverse-net
+
+  mernverse-mongo:
+    image: mongo:8.0.8
+    container_name: mernverse-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+      - ./backend/mongo-init/:/docker-entrypoint-initdb.d/
+    networks:
+      - mernverse-net
+
+volumes:
+  mongo-data:
+
+networks:
+  mernverse-net:
