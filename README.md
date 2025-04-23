@@ -57,7 +57,6 @@ Before you start, ensure the following tools are installed on your system:
 
 - **React Frontend (served by Nginx)**:  
   Visit <http://localhost> to interact with the chat interface.
-  Documentation is available at <http://localhost:8000/docs>  
 
 - **Swagger API Documentation**:  
   Visit <http://localhost/api-docs> to explore and test the available API routes.
