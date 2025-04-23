@@ -1,0 +1,45 @@
+# Node.js dependencies (frontend + backend)
+node_modules/
+**/node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Build output
+frontend/dist/
+frontend/.vite/
+
+# Environment variables (if you ever decide to use .env locally)
+.env
+.env.local
+.env.*.local
+
+# Docker
+docker-compose.override.yml
+*.env  # Optional if you have env files for Docker
+
+# VSCode and IDE settings
+.vscode/
+.idea/
+
+# Nginx generated files (if any)
+nginx/logs/
+nginx/temp/
+
+# Coverage/testing
+coverage/
+backend/test-results/
+
+# Optional lockfiles
+package-lock.json
+# Uncomment below if using yarn or pnpm
+# yarn.lock
+# pnpm-lock.yaml

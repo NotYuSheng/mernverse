@@ -39,6 +39,9 @@ This will:
 - **Nginx for Serving Frontend and Proxying Requests**:  
   **Nginx** is used to serve the built frontend files and proxy API and WebSocket requests to the backend.
 
+- **Input Validation with Joi**:
+  All incoming chat messages are validated using Joi to ensure data integrity and prevent malformed inputs or potential security issues.
+
 ---
 
 ## Prerequisites

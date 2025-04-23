@@ -2,6 +2,8 @@ services:
   mernverse-backend:
     build: ./backend
     container_name: mernverse-backend
+    environment:
+    - MONGO_URI=mongodb://mernverse-mongo:27017/mernverse
     expose:
       - "5000"
     depends_on:

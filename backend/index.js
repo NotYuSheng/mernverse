@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const { Server } = require('socket.io');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
+const Joi = require('joi');
 const connectDB = require('./config/db');
 
 // Import Routes
@@ -50,13 +51,37 @@ const io = new Server(server, {
   }
 });
 
+// Define Joi validation schema
+const messageSchema = Joi.object({
+  username: Joi.string().trim().max(50).required(),
+  message: Joi.string().trim().max(500).required()
+});
+
 io.on('connection', (socket) => {
   console.log('a user connected');
 
   socket.on('chat message', async (msg) => {
-    const newMessage = new Message(msg);
-    await newMessage.save();
-    io.emit('chat message', msg);
+    try {
+      // Validate message with Joi
+      const { error, value } = messageSchema.validate(msg);
+
+      if (error) {
+        console.warn('Validation failed:', error.details);
+        socket.emit('error', { error: 'Invalid message format.' });
+        return;
+      }
+
+      // Save validated message
+      const newMessage = new Message(value);
+      await newMessage.save();
+
+      // Broadcast sanitized message
+      io.emit('chat message', value);
+
+    } catch (err) {
+      console.error('Error saving message:', err);
+      socket.emit('error', { error: 'Failed to save message.' });
+    }
   });
 
   socket.on('disconnect', () => {
