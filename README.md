@@ -2,6 +2,13 @@
 
 A lightweight real-time chat application built with the MERN Stack (MongoDB, Express.js, React, Node.js), featuring Socket.IO for real-time communication and Dockerized for easy deployment.
 
+<details>
+  <summary>Page Sample</summary>
+  <br>
+  <div align="center">
+    <img src="sample-files/DEMO.png" alt="DEMO img" style="width: 75%; max-width: 50px; height: auto;" />
+</details>
+
 ---
 
 ## Getting Started
