@@ -1,0 +1,44 @@
+services:
+  mernverse-backend:
+    build: ./backend
+    container_name: mernverse-backend
+    environment:
+    - MONGO_URI=mongodb://mernverse-mongo:27017/mernverse
+    expose:
+      - "5000"
+    depends_on:
+      - mernverse-mongo
+    networks:
+      - mernverse-net
+
+  mernverse-mongo:
+    image: mongo:8.0.8
+    container_name: mernverse-mongo
+    expose:
+      - "27017"
+    volumes:
+      - mongo-data:/data/db
+      - ./backend/mongo-init/:/docker-entrypoint-initdb.d/
+    networks:
+      - mernverse-net
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mernverse-frontend:
+    build: ./frontend
+    container_name: mernverse-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - mernverse-backend
+    networks:
+      - mernverse-net
+
+volumes:
+  mongo-data:
+
+networks:
+  mernverse-net:
