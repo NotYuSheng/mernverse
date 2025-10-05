@@ -1,5 +1,7 @@
 import { io } from 'socket.io-client';
 
-const socket = io('/'); // Nginx proxies WebSocket traffic
+const socket = io('/', {
+  withCredentials: true
+});
 
 export default socket;
