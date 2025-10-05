@@ -5,12 +5,9 @@ A lightweight real-time chat application built with the MERN Stack (MongoDB, Exp
 > [!WARNING]  
 > This project was created for **educational purposes only** and is **not intended for production use**.
 
-<details>
-  <summary>Page Sample</summary>
-  <br>
-  <div align="center">
-    <img src="sample-files/DEMO-v1.0.0.png" alt="DEMO img" style="width: 75%; max-width: 800px; height: auto;" />
-</details>
+<div align="center">
+  <img src="sample-files/DEMO-v0.0.1.png" alt="DEMO img" style="width: 75%; max-width: 800px; height: auto;" />
+</div>
 
 ---
 
