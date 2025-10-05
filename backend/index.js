@@ -8,6 +8,7 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const Joi = require('joi');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const crypto = require('crypto');
 const connectDB = require('./config/db');
 const { RANDOM_NAMES } = require('./constants/usernames');
 
@@ -27,11 +28,11 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 app.use(session({
-  secret: 'mernverse-secret-key-change-in-production',
+  secret: process.env.SESSION_SECRET || 'mernverse-secret-key-change-in-production',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false, // Set to true if using HTTPS
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
   }
@@ -71,8 +72,20 @@ const io = new Server(server, {
 
 // Track connected users and their sessions
 const connectedUsers = new Map(); // socketId -> username
-const sessionToUsername = new Map(); // sessionId -> username
+const sessionToUsername = new Map(); // sessionId -> { username, lastSeen }
 const activeConnections = new Map(); // username -> count of active connections
+
+// Periodically clean up old sessions to prevent memory leaks
+const SESSION_TIMEOUT = 30 * 24 * 60 * 60 * 1000; // 30 days, same as cookie maxAge
+setInterval(() => {
+  const now = Date.now();
+  for (const [sessionId, sessionData] of sessionToUsername.entries()) {
+    if (now - sessionData.lastSeen > SESSION_TIMEOUT) {
+      sessionToUsername.delete(sessionId);
+      console.log(`Cleaned up expired session: ${sessionId}`);
+    }
+  }
+}, 60 * 60 * 1000); // Run every hour
 
 // Define Joi validation schema
 const messageSchema = Joi.object({
@@ -81,24 +94,32 @@ const messageSchema = Joi.object({
   roomId: Joi.string().trim().required()
 });
 
-// Function to generate a unique room ID
+// Function to generate a cryptographically secure unique room ID
 const generateRoomId = () => {
-  return Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+  const randomBytes = crypto.randomBytes(6).toString('base64url');
+  const timestamp = Date.now().toString(36);
+  return `${randomBytes}${timestamp}`;
 };
 
 // Function to get a random unused name
 const getRandomUsername = () => {
   // Get all assigned usernames (from sessions)
-  const assignedUsernames = new Set(sessionToUsername.values());
+  const assignedUsernames = new Set(
+    Array.from(sessionToUsername.values()).map(data => data.username)
+  );
 
   // Filter out names that are already assigned to a session
   const availableNames = RANDOM_NAMES.filter(name => !assignedUsernames.has(name));
 
   if (availableNames.length === 0) {
-    // If all names are used, add a number suffix
-    const randomName = RANDOM_NAMES[Math.floor(Math.random() * RANDOM_NAMES.length)];
-    const suffix = Math.floor(Math.random() * 1000);
-    return `${randomName}${suffix}`;
+    // If all names are used, add a number suffix until a unique name is found
+    let newName;
+    do {
+      const randomName = RANDOM_NAMES[Math.floor(Math.random() * RANDOM_NAMES.length)];
+      const suffix = Math.floor(Math.random() * 1000);
+      newName = `${randomName}${suffix}`;
+    } while (assignedUsernames.has(newName));
+    return newName;
   }
 
   const randomIndex = Math.floor(Math.random() * availableNames.length);
@@ -116,12 +137,15 @@ io.on('connection', (socket) => {
 
     // Check if this session already has a username
     if (sessionId && sessionToUsername.has(sessionId)) {
-      username = sessionToUsername.get(sessionId);
+      const sessionData = sessionToUsername.get(sessionId);
+      username = sessionData.username;
+      // Update last seen timestamp
+      sessionData.lastSeen = Date.now();
     } else {
       // Assign a new random username
       username = getRandomUsername();
       if (sessionId) {
-        sessionToUsername.set(sessionId, username);
+        sessionToUsername.set(sessionId, { username, lastSeen: Date.now() });
       }
     }
 

@@ -3,9 +3,13 @@ import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import ChatWindow from './components/ChatWindow';
 import socket from './services/socket';
 
-// Generate a unique room ID
+// Generate a cryptographically secure unique room ID
 const generateRoomId = () => {
-  return Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+  const array = new Uint8Array(6);
+  crypto.getRandomValues(array);
+  const randomString = Array.from(array, byte => byte.toString(36)).join('');
+  const timestamp = Date.now().toString(36);
+  return `${randomString}${timestamp}`;
 };
 
 function ChatRoom() {
