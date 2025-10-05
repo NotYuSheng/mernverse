@@ -39,85 +39,101 @@ function ChatWindow({ messages, input, setInput, sendMessage, username, roomId }
 
     return (
       <div style={{
-        maxWidth: '900px',
-        width: '90%',
-        margin: '20px auto',
-        padding: '24px',
-        border: `1px solid ${isDarkMode ? '#333' : '#e0e0e0'}`,
-        borderRadius: '12px',
-        boxShadow: isDarkMode
-          ? '0 8px 24px rgba(0, 0, 0, 0.4)'
-          : '0 4px 16px rgba(0, 0, 0, 0.08)',
+        maxWidth: '800px',
+        width: '100%',
+        margin: '0 auto',
+        padding: '0',
         fontFamily: 'system-ui, -apple-system, sans-serif',
-        backgroundColor: isDarkMode ? '#1a1a1a' : '#ffffff',
-        height: 'calc(100vh - 40px)',
+        height: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        boxSizing: 'border-box'
+        boxSizing: 'border-box',
+        backgroundColor: isDarkMode ? '#0a0a0a' : '#f5f5f5'
       }}>
         <div style={{
-          textAlign: 'center',
-          marginBottom: '20px',
-          paddingBottom: '16px',
-          borderBottom: `1px solid ${isDarkMode ? '#333' : '#e0e0e0'}`,
+          padding: '20px 24px',
+          backgroundColor: isDarkMode ? '#1a1a1a' : '#ffffff',
+          borderBottom: `1px solid ${isDarkMode ? '#2a2a2a' : '#e5e5e5'}`,
           flexShrink: 0
         }}>
           <h1 style={{
-            color: isDarkMode ? '#fff' : '#1a1a1a',
-            fontSize: '1.5em',
-            margin: '0 0 8px 0',
-            fontWeight: '600'
+            color: isDarkMode ? '#ffffff' : '#111111',
+            fontSize: '20px',
+            margin: '0 0 4px 0',
+            fontWeight: '600',
+            letterSpacing: '-0.01em'
           }}>
             MERNverse Chat
           </h1>
-          <span style={{
-            fontSize: '0.9em',
-            color: getUserColor(username),
-            fontWeight: '500'
+          <div style={{
+            fontSize: '14px',
+            color: isDarkMode ? '#888' : '#666',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
           }}>
-            {username}
-          </span>
+            <span>Logged in as</span>
+            <span style={{
+              color: getUserColor(username),
+              fontWeight: '600'
+            }}>
+              {username}
+            </span>
+          </div>
         </div>
 
         <div style={{
           flex: 1,
           minHeight: 0,
           overflowY: 'auto',
-          marginBottom: '20px',
-          padding: '16px',
-          backgroundColor: isDarkMode ? '#0d0d0d' : '#fafafa',
-          border: `1px solid ${isDarkMode ? '#333' : '#e0e0e0'}`,
-          borderRadius: '8px'
+          padding: '24px',
+          backgroundColor: isDarkMode ? '#0a0a0a' : '#f5f5f5'
         }}>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {messages.map((msg, idx) => {
               const isCurrentUser = msg.username === username;
               return (
                 <li key={idx} style={{
-                  marginBottom: '12px',
-                  padding: '12px 16px',
-                  backgroundColor: isCurrentUser
-                    ? (isDarkMode ? '#1a2f1a' : '#e8f5e9')
-                    : (isDarkMode ? '#1a1a1a' : '#ffffff'),
-                  borderRadius: '8px',
-                  wordWrap: 'break-word',
-                  overflowWrap: 'break-word',
-                  whiteSpace: 'normal',
-                  borderLeft: `3px solid ${getUserColor(msg.username)}`,
-                  boxShadow: isDarkMode
-                    ? '0 1px 3px rgba(0, 0, 0, 0.3)'
-                    : '0 1px 3px rgba(0, 0, 0, 0.05)'
+                  marginBottom: '16px',
+                  maxWidth: '100%'
                 }}>
-                  <strong style={{
-                    color: getUserColor(msg.username),
-                    fontSize: '0.9em',
-                    marginRight: '8px'
+                  <div style={{
+                    display: 'inline-block',
+                    maxWidth: '75%',
+                    padding: '12px 16px',
+                    backgroundColor: isCurrentUser
+                      ? (isDarkMode ? '#2563eb' : '#2563eb')
+                      : (isDarkMode ? '#1e1e1e' : '#ffffff'),
+                    borderRadius: '12px',
+                    boxShadow: isDarkMode
+                      ? '0 1px 2px rgba(0, 0, 0, 0.4)'
+                      : '0 1px 3px rgba(0, 0, 0, 0.1)',
+                    wordWrap: 'break-word',
+                    overflowWrap: 'break-word',
+                    wordBreak: 'break-word',
+                    whiteSpace: 'pre-wrap'
                   }}>
-                    {msg.username}
-                  </strong>
-                  <span style={{ color: isDarkMode ? '#e0e0e0' : '#333' }}>
-                    {msg.message}
-                  </span>
+                    <div style={{
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      marginBottom: '4px',
+                      color: isCurrentUser
+                        ? 'rgba(255, 255, 255, 0.9)'
+                        : getUserColor(msg.username),
+                      opacity: 0.9
+                    }}>
+                      {msg.username}
+                    </div>
+                    <div style={{
+                      color: isCurrentUser
+                        ? '#ffffff'
+                        : (isDarkMode ? '#e5e5e5' : '#1a1a1a'),
+                      fontSize: '15px',
+                      lineHeight: '1.5'
+                    }}>
+                      {msg.message}
+                    </div>
+                  </div>
                 </li>
               );
             })}
@@ -126,49 +142,68 @@ function ChatWindow({ messages, input, setInput, sendMessage, username, roomId }
         </div>
 
         <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
+          padding: '16px 24px',
+          backgroundColor: isDarkMode ? '#1a1a1a' : '#ffffff',
+          borderTop: `1px solid ${isDarkMode ? '#2a2a2a' : '#e5e5e5'}`,
           flexShrink: 0
         }}>
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type a message..."
-            style={{
-              flex: 1,
-              minWidth: 0,
-              padding: '12px 16px',
-              borderRadius: '8px',
-              border: `1px solid ${isDarkMode ? '#333' : '#d0d0d0'}`,
-              backgroundColor: isDarkMode ? '#0d0d0d' : '#ffffff',
-              color: isDarkMode ? '#fff' : '#1a1a1a',
+          <div style={{
+            display: 'flex',
+            gap: '12px',
+            alignItems: 'flex-end'
+          }}>
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Type a message..."
+              style={{
+                flex: 1,
+                padding: '12px 16px',
+                borderRadius: '24px',
+                border: `1px solid ${isDarkMode ? '#2a2a2a' : '#e0e0e0'}`,
+                backgroundColor: isDarkMode ? '#0a0a0a' : '#f5f5f5',
+                color: isDarkMode ? '#ffffff' : '#1a1a1a',
+                fontSize: '15px',
+                outline: 'none',
+                transition: 'all 0.2s ease',
+                boxSizing: 'border-box',
+                fontFamily: 'inherit'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#2563eb';
+                e.target.style.backgroundColor = isDarkMode ? '#0f0f0f' : '#ffffff';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = isDarkMode ? '#2a2a2a' : '#e0e0e0';
+                e.target.style.backgroundColor = isDarkMode ? '#0a0a0a' : '#f5f5f5';
+              }}
+            />
+            <button onClick={sendMessage} style={{
+              padding: '12px 28px',
+              borderRadius: '24px',
+              border: 'none',
+              backgroundColor: '#2563eb',
+              color: '#ffffff',
+              fontWeight: '600',
+              cursor: 'pointer',
               fontSize: '15px',
-              outline: 'none',
-              transition: 'border-color 0.2s',
-              boxSizing: 'border-box'
+              transition: 'all 0.2s ease',
+              whiteSpace: 'nowrap',
+              fontFamily: 'inherit'
             }}
-            onFocus={(e) => e.target.style.borderColor = isDarkMode ? '#555' : '#999'}
-            onBlur={(e) => e.target.style.borderColor = isDarkMode ? '#333' : '#d0d0d0'}
-          />
-          <button onClick={sendMessage} style={{
-            padding: '12px 24px',
-            borderRadius: '8px',
-            border: 'none',
-            backgroundColor: '#2563eb',
-            color: '#fff',
-            fontWeight: '600',
-            cursor: 'pointer',
-            fontSize: '15px',
-            transition: 'background-color 0.2s',
-            whiteSpace: 'nowrap'
-          }}
-          onMouseEnter={(e) => e.target.style.backgroundColor = '#1d4ed8'}
-          onMouseLeave={(e) => e.target.style.backgroundColor = '#2563eb'}
-          >
-            Send
-          </button>
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#1d4ed8';
+              e.target.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#2563eb';
+              e.target.style.transform = 'translateY(0)';
+            }}
+            >
+              Send
+            </button>
+          </div>
         </div>
       </div>
     );
