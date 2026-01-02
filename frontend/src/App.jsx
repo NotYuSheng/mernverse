@@ -3,21 +3,47 @@ import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import ChatWindow from './components/ChatWindow';
 import socket from './services/socket';
 
-// Generate a cryptographically secure unique room ID
+// Generate a cryptographically secure 6-character alphanumeric room ID
 const generateRoomId = () => {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
   const array = new Uint8Array(6);
   crypto.getRandomValues(array);
-  const randomString = Array.from(array, byte => byte.toString(36)).join('');
-  const timestamp = Date.now().toString(36);
-  return `${randomString}${timestamp}`;
+  return Array.from(array, byte => chars[byte % chars.length]).join('');
 };
 
 function ChatRoom() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [username, setUsername] = useState('Anonymous');
+  const [unreadCount, setUnreadCount] = useState(0);
   const { roomId } = useParams();
   const navigate = useNavigate();
+
+  // Request notification permission on mount
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  // Update document title with unread count
+  useEffect(() => {
+    if (unreadCount > 0) {
+      document.title = `(${unreadCount}) MERNverse Chat`;
+    } else {
+      document.title = 'MERNverse Chat';
+    }
+  }, [unreadCount]);
+
+  // Reset unread count when window gains focus
+  useEffect(() => {
+    const handleFocus = () => {
+      setUnreadCount(0);
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, []);
 
   useEffect(() => {
     // Get or create session ID
@@ -34,10 +60,18 @@ function ChatRoom() {
     socket.emit('join room', roomId);
 
     // Load chat history for this room
-    fetch(`/messages/${roomId}`)
-      .then(res => res.json())
+    fetch(`/api/messages/${roomId}`)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(setMessages)
-      .catch(console.error);
+      .catch(err => {
+        console.error('Failed to load chat history:', err);
+        setMessages([]); // Set empty array on error
+      });
 
     // Listen for username assignment from server
     socket.on('username assigned', (assignedUsername) => {
@@ -48,6 +82,31 @@ function ChatRoom() {
       // Only add messages from this room
       if (msg.roomId === roomId) {
         setMessages(prev => [...prev, msg]);
+
+        // Show notification if window is not focused and it's not the user's own message
+        if (!document.hasFocus() && msg.name !== username) {
+          // Increment unread count
+          setUnreadCount(prev => prev + 1);
+
+          // Show browser notification
+          if ('Notification' in window && Notification.permission === 'granted') {
+            const notification = new Notification('New message from ' + msg.name, {
+              body: msg.message,
+              icon: '/favicon.ico',
+              badge: '/favicon.ico',
+              tag: 'mernverse-message'
+            });
+
+            // Close notification after 5 seconds
+            setTimeout(() => notification.close(), 5000);
+
+            // Focus window when notification is clicked
+            notification.onclick = () => {
+              window.focus();
+              notification.close();
+            };
+          }
+        }
       }
     });
 
@@ -55,7 +114,7 @@ function ChatRoom() {
       socket.off('username assigned');
       socket.off('chat message');
     };
-  }, [roomId]);
+  }, [roomId, username]);
 
   const sendMessage = () => {
     if (input.trim()) {

@@ -1,0 +1,55 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="galaxyGradient" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#ec4899;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#8b5cf6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0.8" />
+    </radialGradient>
+  </defs>
+
+  <!-- Left tentacle - flowing spiral -->
+  <path d="M 100 100 Q 78 90, 60 85 Q 42 80, 30 88 Q 20 95, 25 110 Q 28 122, 35 138"
+        stroke="url(#galaxyGradient)" stroke-width="11" fill="none" opacity="0.75" stroke-linecap="round" />
+
+  <!-- Bottom-right tentacle - organic curve -->
+  <path d="M 100 100 Q 108 125, 120 148 Q 128 165, 140 175 Q 150 183, 158 180"
+        stroke="url(#galaxyGradient)" stroke-width="9" fill="none" opacity="0.75" stroke-linecap="round" />
+
+  <!-- Upper-right tentacle - sweeping arc -->
+  <path d="M 100 100 Q 128 88, 148 78 Q 165 70, 178 75 Q 188 80, 185 95"
+        stroke="url(#galaxyGradient)" stroke-width="10" fill="none" opacity="0.75" stroke-linecap="round" />
+
+  <!-- Center core -->
+  <circle cx="100" cy="100" r="18" fill="url(#galaxyGradient)" />
+  <circle cx="100" cy="100" r="18" fill="#fff" opacity="0.3">
+    <animate attributeName="r" values="18;24;18" dur="3s" repeatCount="indefinite" />
+    <animate attributeName="opacity" values="0.3;0.1;0.3" dur="3s" repeatCount="indefinite" />
+  </circle>
+
+  <!-- Scattered glowing stars -->
+  <circle cx="65" cy="88" r="3.5" fill="#fbbf24" opacity="0.85">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="2.1s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="38" cy="95" r="3" fill="#ec4899" opacity="0.8">
+    <animate attributeName="opacity" values="0.4;0.95;0.4" dur="2.7s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="28" cy="118" r="2.5" fill="#fff" opacity="0.7">
+    <animate attributeName="opacity" values="0.3;0.85;0.3" dur="3.2s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="115" cy="132" r="4" fill="#8b5cf6" opacity="0.9">
+    <animate attributeName="opacity" values="0.6;1;0.6" dur="1.9s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="145" cy="168" r="3.2" fill="#3b82f6" opacity="0.8">
+    <animate attributeName="opacity" values="0.45;0.95;0.45" dur="2.4s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="152" cy="80" r="3.8" fill="#fbbf24" opacity="0.85">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="175" cy="82" r="2.8" fill="#3b82f6" opacity="0.75">
+    <animate attributeName="opacity" values="0.4;0.9;0.4" dur="2.6s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="50" cy="122" r="2.3" fill="#8b5cf6" opacity="0.7">
+    <animate attributeName="opacity" values="0.35;0.85;0.35" dur="3s" repeatCount="indefinite" />
+  </circle>
+</svg>
