@@ -92,8 +92,8 @@ function ChatRoom() {
           if ('Notification' in window && Notification.permission === 'granted') {
             const notification = new Notification('New message from ' + msg.name, {
               body: msg.message,
-              icon: '/favicon.ico',
-              badge: '/favicon.ico',
+              icon: '/favicon.svg',
+              badge: '/favicon.svg',
               tag: 'mernverse-message'
             });
 
