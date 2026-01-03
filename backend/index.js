@@ -43,9 +43,7 @@ const limiter = rateLimit({
 });
 
 // Apply rate limiting to API routes only (not Socket.IO)
-app.use('/api', limiter);
 app.use('/messages', limiter);
-app.use('/health', limiter);
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'mernverse-secret-key-change-in-production',
