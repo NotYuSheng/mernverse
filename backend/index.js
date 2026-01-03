@@ -1,6 +1,5 @@
 const express = require('express');
 const http = require('http');
-const cors = require('cors');
 const mongoose = require('mongoose');
 const { Server } = require('socket.io');
 const swaggerUi = require('swagger-ui-express');
@@ -9,6 +8,8 @@ const Joi = require('joi');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
+const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/db');
 const { RANDOM_NAMES } = require('./constants/usernames');
 
@@ -21,12 +22,29 @@ const app = express();
 const server = http.createServer(app);
 
 // Middleware
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
 app.use(express.json());
 app.use(cookieParser());
+
+// CORS configuration - restrict to specific origins in production
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || '*',
+  credentials: true
+};
+app.use(cors(corsOptions));
+
+// Rate limiting configuration for chat app
+// More permissive limits for real-time chat conversations
+const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 60, // Limit each IP to 60 requests per minute (average 1 req/sec)
+  message: 'Too many requests from this IP, please slow down.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply rate limiting to API routes only (not Socket.IO)
+app.use('/messages', limiter);
+
 app.use(session({
   secret: process.env.SESSION_SECRET || 'mernverse-secret-key-change-in-production',
   resave: false,
@@ -57,18 +75,12 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-// Use Routes
+// Use Routes (no /api prefix - Nginx handles that)
 app.use('/health', healthRoutes);
 app.use('/messages', messageRoutes);
 
 // Socket.IO setup with session support
-const io = new Server(server, {
-  cors: {
-    origin: true,
-    credentials: true,
-    methods: ['GET', 'POST']
-  }
-});
+const io = new Server(server);
 
 // Track connected users and their sessions
 const connectedUsers = new Map(); // socketId -> username
@@ -223,7 +235,7 @@ io.on('connection', (socket) => {
 });
 
 // Start Server
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
